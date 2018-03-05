@@ -1,7 +1,4 @@
-const hostname = [
-	'*.example.com',
-	'*.test.com'
-];
+const hostname = '*';
 
 chrome.runtime.onConnect.addListener(port =>
 {
@@ -21,19 +18,16 @@ chrome.runtime.onConnect.addListener(port =>
 	});
 });
 
-hostname.forEach((host) =>
+chrome.tabs.query({
+	status : 'complete',
+	url    : `https://${hostname}/*`,
+}, tabs =>
 {
-	chrome.tabs.query({
-		status : 'complete',
-		url    : `*://${host}/*`,
-	}, tabs =>
+	tabs.forEach(tab =>
 	{
-		tabs.forEach(tab =>
-		{
-			chrome.tabs.executeScript(tab.id, {
-				file  : 'content.js',
-				runAt : 'document_start',
-			});
+		chrome.tabs.executeScript(tab.id, {
+			file  : 'content.js',
+			runAt : 'document_start',
 		});
 	});
 });
